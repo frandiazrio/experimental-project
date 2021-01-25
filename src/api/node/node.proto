@@ -10,7 +10,8 @@ import "google/protobuf/timestamp.proto";
 
 message PingMessage{
   string Info = 1;
-  google.protobuf.Timestamp Timestamp = 2;
+  string id = 2;
+  google.protobuf.Timestamp Timestamp = 3;
 }
 
 service NodeAgent{
