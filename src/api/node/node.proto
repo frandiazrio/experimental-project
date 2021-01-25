@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package node;
+option go_package = "github.com/frandiazrio/arca/src/api/node";
+
+import "google/protobuf/timestamp.proto";
+
+
+
+
+message PingMessage{
+  string Info = 1;
+  google.protobuf.Timestamp Timestamp = 2;
+}
+
+service NodeAgent{
+  rpc echoReply(PingMessage) returns (PingMessage);
+}
