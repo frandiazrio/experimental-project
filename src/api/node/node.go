@@ -38,10 +38,12 @@ func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.Dial
 		log.Fatalln("Invalid ip address")
 	}
 
+	NodeAgentServer := NodeAgentServer{}
 	config := createGrpcDialConfig(configs...)
 	return &Node{
 		ID:             ID,
 		IpAddr:         IpAddr,
+		nodeAgent:      NodeAgentServer,
 		grpcServer:     grpc.NewServer(),
 		listener:       nil,
 		port:           port,
@@ -63,9 +65,9 @@ func (node *Node) Start() *Node {
 
 	// Using the grpc server in node
 	// Node implements the NodeAgentServer interface so we can use directly in here to start the service
-	pb.RegisterNodeAgentServer(node.grpcServer, node.nodeAgent)
+	pb.RegisterNodeAgentServer(node.grpcServer, &node.nodeAgent)
 	if err = node.grpcServer.Serve(*node.listener); err != nil {
-		log.Fatal("failed to serve %v", err)
+		log.Fatal(err)
 	}
 
 	return node
