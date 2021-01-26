@@ -1,4 +1,4 @@
-package internal
+package node
 
 import "math/big"
 
@@ -49,6 +49,4 @@ func fingerID(n []byte, i, m int)[]byte{
 	return idInt.Bytes()
 }
 
-func NewFingerTable()FingerTable{
 
-}

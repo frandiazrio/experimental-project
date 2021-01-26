@@ -1,5 +1,5 @@
 // Package internal provides definitions and functions for P2P communication between chordal nodes
-package internal
+package node
 
 import (
 	"context"
@@ -7,13 +7,14 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/frandiazrio/arca/src/api/node"
+	pb "github.com/frandiazrio/arca/src/api/node/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type NodeAgentServer struct{}
-
+type NodeAgentServer struct {
+	
+}
 // Node type provides definition of a chord node
 type Node struct {
 	ID             string
@@ -36,25 +37,22 @@ func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.Dial
 	if ipAddr := net.ParseIP(IpAddr); ipAddr != nil {
 		log.Fatalln("Invalid ip address")
 	}
-	
-	config := make([]grpc.DialOption, 2)
-	for _,cfg := range configs{
-		config = append(config, cfg)
-	}
+
+	config := createGrpcDialConfig(configs...)
 	return &Node{
 		ID:             ID,
 		IpAddr:         IpAddr,
 		grpcServer:     grpc.NewServer(),
 		listener:       nil,
 		port:           port,
-		connConfig:    	config, 
+		connConfig:     config,
 		virtualNode:    virtualNode,
 		connectionPool: make(map[string]grpc.ClientConn),
 	}
 }
 
 // Start node service by binding to the assigned address to the node
-func (node *Node) Start()*Node {
+func (node *Node) Start() *Node {
 	var err error
 	*node.listener, err = net.Listen("tcp", node.IpAddr)
 
@@ -65,7 +63,7 @@ func (node *Node) Start()*Node {
 
 	// Using the grpc server in node
 	// Node implements the NodeAgentServer interface so we can use directly in here to start the service
-	pb.RegisterNodeAgentServer(node.grpcServer, &node.nodeAgent)
+	pb.RegisterNodeAgentServer(node.grpcServer, node.nodeAgent)
 	if err = node.grpcServer.Serve(*node.listener); err != nil {
 		log.Fatal("failed to serve %v", err)
 	}
@@ -73,11 +71,19 @@ func (node *Node) Start()*Node {
 	return node
 }
 
-func (node *Node) Connect(targetNode *Node){
-	grpc.Dial(targetNode.IpAddr,node.connConfig...)
+func (node *Node) Connect(targetNode *Node) {
+	grpc.Dial(targetNode.IpAddr, node.connConfig...)
 }
 
+// Creates a grpc Dial Options slice
+func createGrpcDialConfig(configs ...grpc.DialOption) []grpc.DialOption {
+	config := []grpc.DialOption{}
 
+	for _, cfg := range configs {
+		config = append(config, cfg)
+	}
+	return config
+}
 
 func NewDefaultNode(ID string, port int) *Node {
 	return NewNode(ID, "localhost", port, false)
