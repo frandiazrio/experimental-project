@@ -3,6 +3,7 @@ package node
 
 import (
 	"context"
+	"fmt"
 
 	"log"
 	"net"
@@ -12,16 +13,18 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type NodeAgentServer struct {
+//Implements NodeAgentServerInterface.
+// Provides the server rpc API
+type nodeAgentServerAPI struct {
 	
 }
 // Node type provides definition of a chord node
 type Node struct {
 	ID             string
 	IpAddr         string
-	nodeAgent      NodeAgentServer
+	nodeAgent      nodeAgentServerAPI
 	grpcServer     *grpc.Server
-	listener       *net.Listener
+	listener       *net.TCPListener
 	port           int
 	connConfig     []grpc.DialOption
 	virtualNode    bool
@@ -38,12 +41,12 @@ func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.Dial
 		log.Fatalln("Invalid ip address")
 	}
 
-	NodeAgentServer := NodeAgentServer{}
+	nodeAgentServer := nodeAgentServerAPI{}
 	config := createGrpcDialConfig(configs...)
 	return &Node{
 		ID:             ID,
 		IpAddr:         IpAddr,
-		nodeAgent:      NodeAgentServer,
+		nodeAgent:      nodeAgentServer,
 		grpcServer:     grpc.NewServer(),
 		listener:       nil,
 		port:           port,
@@ -52,24 +55,31 @@ func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.Dial
 		connectionPool: make(map[string]grpc.ClientConn),
 	}
 }
-
+func (node *Node) getServerAddress() string{
+	return fmt.Sprintf("%s:%d", node.IpAddr, node.port)
+}
 // Start node service by binding to the assigned address to the node
 func (node *Node) Start() *Node {
 	var err error
-	*node.listener, err = net.Listen("tcp", node.IpAddr)
+	
+	listener, err := net.Listen("tcp", node.getServerAddress())
 
 	if err != nil {
 		// error creating listener on address
+		log.Println("Error creating listener")
 		log.Fatal(err)
 	}
 
+	node.listener = listener.(*net.TCPListener)
 	// Using the grpc server in node
 	// Node implements the NodeAgentServer interface so we can use directly in here to start the service
 	pb.RegisterNodeAgentServer(node.grpcServer, &node.nodeAgent)
-	if err = node.grpcServer.Serve(*node.listener); err != nil {
+	fmt.Printf("Starting node server on %s", node.getServerAddress())
+	if err = node.grpcServer.Serve(node.listener); err != nil {
+		log.Println("Error starting server")
 		log.Fatal(err)
 	}
-
+	
 	return node
 }
 
@@ -91,10 +101,21 @@ func NewDefaultNode(ID string, port int) *Node {
 	return NewNode(ID, "localhost", port, false)
 }
 
-func (nodeAgent *NodeAgentServer) EchoReply(ctx context.Context, pingMsg *pb.PingMessage) (*pb.PingMessage, error) {
+func (nodeAgent *nodeAgentServerAPI) EchoReply(ctx context.Context, pingMsg *pb.PingMessage) (*pb.PingMessage, error) {
 	log.Println("RCV - CONTENT: ", pingMsg.Info)
 	return &pb.PingMessage{
 		Info:      "Echo Message",
 		Timestamp: timestamppb.Now(),
 	}, nil
 }
+
+func (node *Node) EchoReply(ctx context.Context, pingMsg *pb.PingMessage)(*pb.PingMessage, error){
+	msg, err := node.nodeAgent.EchoReply(ctx, pingMsg)
+
+	if err != nil{
+		log.Println(err)
+	}
+
+
+	return msg, err
+} 
