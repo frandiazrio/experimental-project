@@ -25,7 +25,7 @@ func main(){
 	node := node.NewDefaultNode("node2", 8082)
 
 	ctx := context.Background()
-	 reply, err := node.Connect("localhost", 8081, grpc.WithInsecure()).EchoReply(
+	reply, err := node.Connect("localhost", 8081, grpc.WithInsecure()).EchoReply(
 		ctx, 
 		&pb.PingMessage{
 			Info: "Message from node2",
