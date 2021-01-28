@@ -6,7 +6,8 @@ import (
 )
 
 func main(){
-	n := node.NewDefaultNode("localhost", 8081)
+	//Acting as server	
+	n := node.NewDefaultNode("node1", 8081)
 	n.Start()
 
 }

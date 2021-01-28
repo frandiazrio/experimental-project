@@ -13,16 +13,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-//Implements NodeAgentServerInterface.
-// Provides the server rpc API
-type nodeAgentServerAPI struct {
-	
-}
 // Node type provides definition of a chord node
 type Node struct {
 	ID             string
 	IpAddr         string
-	nodeAgent      nodeAgentServerAPI
 	grpcServer     *grpc.Server
 	listener       *net.TCPListener
 	port           int
@@ -41,12 +35,10 @@ func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.Dial
 		log.Fatalln("Invalid ip address")
 	}
 
-	nodeAgentServer := nodeAgentServerAPI{}
 	config := createGrpcDialConfig(configs...)
 	return &Node{
 		ID:             ID,
 		IpAddr:         IpAddr,
-		nodeAgent:      nodeAgentServer,
 		grpcServer:     grpc.NewServer(),
 		listener:       nil,
 		port:           port,
@@ -55,13 +47,19 @@ func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.Dial
 		connectionPool: make(map[string]grpc.ClientConn),
 	}
 }
-func (node *Node) getServerAddress() string{
-	return fmt.Sprintf("%s:%d", node.IpAddr, node.port)
+
+func address(ipaddr string, port int)string{
+	return fmt.Sprintf("%s:%d", ipaddr, port)
 }
+
+func (node *Node) getServerAddress() string {
+	return address(node.IpAddr, node.port)
+}
+
 // Start node service by binding to the assigned address to the node
 func (node *Node) Start() *Node {
 	var err error
-	
+
 	listener, err := net.Listen("tcp", node.getServerAddress())
 
 	if err != nil {
@@ -73,18 +71,31 @@ func (node *Node) Start() *Node {
 	node.listener = listener.(*net.TCPListener)
 	// Using the grpc server in node
 	// Node implements the NodeAgentServer interface so we can use directly in here to start the service
-	pb.RegisterNodeAgentServer(node.grpcServer, &node.nodeAgent)
-	fmt.Printf("Starting node server on %s", node.getServerAddress())
+	pb.RegisterNodeAgentServer(node.grpcServer, node)
+	fmt.Printf("Starting node server on %s \n", node.getServerAddress())
 	if err = node.grpcServer.Serve(node.listener); err != nil {
 		log.Println("Error starting server")
 		log.Fatal(err)
 	}
-	
+
 	return node
 }
 
-func (node *Node) Connect(targetNode *Node) {
-	grpc.Dial(targetNode.IpAddr, node.connConfig...)
+
+// For now accept a string, with the fingertable implementation this will change
+// TODO lookup Node on fingertable
+// connect to targetNode ip and port and returns a client that can perform the grpc calls 
+
+func (node *Node) Connect(targetIPAddr string, targetPort int, config ...grpc.DialOption)pb.NodeAgentClient {
+	conn , err := grpc.Dial(address(targetIPAddr, targetPort) , config...)
+
+	if err != nil{
+		// Error establising connection
+		log.Fatal(err)
+	}
+
+	client := pb.NewNodeAgentClient(conn)
+	return client
 }
 
 // Creates a grpc Dial Options slice
@@ -101,21 +112,14 @@ func NewDefaultNode(ID string, port int) *Node {
 	return NewNode(ID, "localhost", port, false)
 }
 
-func (nodeAgent *nodeAgentServerAPI) EchoReply(ctx context.Context, pingMsg *pb.PingMessage) (*pb.PingMessage, error) {
+func (node *Node) EchoReply(ctx context.Context, pingMsg *pb.PingMessage) (*pb.PingMessage, error) {
+
 	log.Println("RCV - CONTENT: ", pingMsg.Info)
 	return &pb.PingMessage{
-		Info:      "Echo Message",
+		Info:      fmt.Sprintf("Message from %v", node.ID),
+		
 		Timestamp: timestamppb.Now(),
 	}, nil
+
+
 }
-
-func (node *Node) EchoReply(ctx context.Context, pingMsg *pb.PingMessage)(*pb.PingMessage, error){
-	msg, err := node.nodeAgent.EchoReply(ctx, pingMsg)
-
-	if err != nil{
-		log.Println(err)
-	}
-
-
-	return msg, err
-} 

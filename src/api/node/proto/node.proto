@@ -12,8 +12,8 @@ message PingMessage{
   string Info = 1;
   string id = 2;
   google.protobuf.Timestamp Timestamp = 3;
-}
+} 
 
 service NodeAgent{
   rpc echoReply(PingMessage) returns (PingMessage);
-}
+} 
