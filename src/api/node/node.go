@@ -13,13 +13,13 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 type grpcNodeConn struct{
-	targetID string
-	targetIPAddr string
-	targetPort int
-	conn *grpc.ClientConn
-	client pb.NodeAgentClient
-	lastTimeStamp *timestamppb.Timestamp
-	active bool
+	TargetID string
+	TargetIPAddr string
+	TargetPort int
+	Conn *grpc.ClientConn
+	Client pb.NodeAgentClient
+	LastTimeStamp *timestamppb.Timestamp
+	Active bool
 }
 // Node type provides definition of a chord node
 type Node struct {
@@ -106,13 +106,13 @@ func (node *Node) Connect(targetID, targetIPAddr string, targetPort int, config 
 		
 	client := pb.NewNodeAgentClient(conn)
 	return &grpcNodeConn{
-		targetID: targetID, 
-		targetIPAddr: targetIPAddr,
-		targetPort: targetPort, 
-		client: client, 
-		conn: conn,
-		lastTimeStamp: timestamppb.Now(), 
-		active: true,
+		TargetID: targetID, 
+		TargetIPAddr: targetIPAddr,
+		TargetPort: targetPort, 
+		Client: client, 
+		Conn: conn,
+		LastTimeStamp: timestamppb.Now(), 
+		Active: true,
 
 	}
 }
@@ -134,10 +134,13 @@ func NewDefaultNode(ID string, port int) *Node {
 func (node *Node) EchoReply(ctx context.Context, pingMsg *pb.PingMessage) (*pb.PingMessage, error) {
 
 	log.Println("RCV - CONTENT: ", pingMsg.Info)
-	node.MsgBuffer <- CONNECT
-	node.MsgBuffer <- ACK
+	if pingMsg.Info != "ACK"{
+		go func(n *Node){
+			n.MsgBuffer <-ACK
+		}(node)
+	}
 	return &pb.PingMessage{
-		Info:      fmt.Sprintf("Message from %v", node.ID),
+		Info:      fmt.Sprintf("Sending message to %s", pingMsg.Id),
 		
 		Timestamp: timestamppb.Now(),
 	}, nil
