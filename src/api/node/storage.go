@@ -1,5 +1,6 @@
 package node
+
 //TODO
-type Storage struct{
+type Storage struct {
 	Path string
 }
