@@ -23,8 +23,8 @@ type grpcNodeConn struct{
 }
 // Node type provides definition of a chord node
 type Node struct {
-	ID             string
-	IpAddr         string
+	Name             string
+	IpAddr         string // A node's identifier is chosen by hashing the node's IpAddr
 	MsgBuffer 	   chan int
 	grpcServer     *grpc.Server
 	listener       *net.TCPListener
@@ -38,7 +38,7 @@ func (node *Node) IsVirtualNode() bool {
 	return node.virtualNode
 }
 
-func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.DialOption) *Node {
+func NewNode(Name, IpAddr string, port int, virtualNode bool, configs ...grpc.DialOption) *Node {
 
 	if ipAddr := net.ParseIP(IpAddr); ipAddr != nil {
 		log.Fatalln("Invalid ip address")
@@ -46,7 +46,7 @@ func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.Dial
 
 	config := createGrpcDialConfig(configs...)
 	return &Node{
-		ID:             ID,
+		Name:             Name,
 		IpAddr:         IpAddr,
 		grpcServer:     grpc.NewServer(),
 		MsgBuffer: 		make(chan int),
@@ -58,9 +58,7 @@ func NewNode(ID, IpAddr string, port int, virtualNode bool, configs ...grpc.Dial
 	}
 }
 
-func address(ipaddr string, port int)string{
-	return fmt.Sprintf("%s:%d", ipaddr, port)
-}
+
 
 func (node *Node) getServerAddress() string {
 	return address(node.IpAddr, node.port)
@@ -82,7 +80,7 @@ func (node *Node) Start() *Node {
 	// Using the grpc server in node
 	// Node implements the NodeAgentServer interface so we can use directly in here to start the service
 	pb.RegisterNodeAgentServer(node.grpcServer, node)
-	fmt.Printf("Starting node server on %s \n", node.getServerAddress())
+	log.Printf("Starting node server on %s \n", node.getServerAddress())
 	if err = node.grpcServer.Serve(node.listener); err != nil {
 		log.Println("Error starting server")
 		log.Fatal(err)
@@ -116,7 +114,10 @@ func (node *Node) Connect(targetID, targetIPAddr string, targetPort int, config 
 
 	}
 }
-
+// Hashes the nodes ip address to get the node id 
+func (node *Node)GetNodeId()[]byte{
+	return getHash(node.getServerAddress())
+} 
 // Creates a grpc Dial Options slice
 func createGrpcDialConfig(configs ...grpc.DialOption) []grpc.DialOption {
 	config := []grpc.DialOption{}
