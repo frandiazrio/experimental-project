@@ -24,6 +24,7 @@ type grpcNodeConn struct{
 // Node type provides definition of a chord node
 type Node struct {
 	Name             string
+	ID 				[]byte
 	IpAddr         string // A node's identifier is chosen by hashing the node's IpAddr
 	MsgBuffer 	   chan int
 	grpcServer     *grpc.Server
@@ -47,6 +48,7 @@ func NewNode(Name, IpAddr string, port int, virtualNode bool, configs ...grpc.Di
 	config := createGrpcDialConfig(configs...)
 	return &Node{
 		Name:             Name,
+		ID: 			getHash(address(IpAddr, port)),
 		IpAddr:         IpAddr,
 		grpcServer:     grpc.NewServer(),
 		MsgBuffer: 		make(chan int),
