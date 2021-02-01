@@ -1,4 +1,4 @@
-package node
+package chord
 
 import (
 	"errors"
@@ -58,7 +58,30 @@ func newFingerTable(tableSize int, n *Node)(*FingerTable, error){
 	fingertable := make(FingerTable, tableSize)
 
 	for i:=0; i< tableSize; i++{
-		fingertable[i] = newFingerEntry(fingerID(n.ID, i, tableSize), n)
+		fingertable[i] = newFingerEntry(fingerID(n.Info.Id, i, tableSize), n)
 	}
 	return &fingertable, nil
 }
+
+
+func (ft *FingerTable) getIthEntry(i int)(*fingerEntry, error){
+	if  i <0 || i >= len((*ft)){
+		return nil, errors.New("Invalid index")
+	}
+
+	return (*ft)[i], nil
+}
+
+func(ft *FingerTable)getIthFinger(i int)(*Node, error){
+	entry, err := ft.getIthEntry(i)
+
+	if err != nil{
+		return nil, errors.New("Error getting node: Invalid index")
+	}
+
+	return entry.Node, nil
+}
+
+
+func (ft *FingerTable) 
+

@@ -1,9 +1,7 @@
 // Package internal provides definitions and functions for P2P communication between chordal nodes
-package node
+package chord
 
 import (
-	"context"
-	"fmt"
 
 	"log"
 	"net"
@@ -13,9 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const (
-	M_SHA1 = 160 // number of bits for sha-1 or 20-byte hash value
-)
+
 
 type grpcNodeConn struct {
 	TargetID      string
@@ -30,15 +26,13 @@ type grpcNodeConn struct {
 // Node type provides definition of a chord node
 type Node struct {
 	Name           string
-	ID             []byte
+	Info             *pb.Node // stores internal node information such as ip address, port, and hash
 	SuccessorId    []byte       //TODO
 	PredecessorID  []byte       //TODO
 	FingerTable    *FingerTable //TODO
-	IpAddr         string       // A node's identifier is chosen by hashing the node's IpAddr
 	MsgBuffer      chan int
 	grpcServer     *grpc.Server
 	listener       *net.TCPListener
-	port           int
 	connConfig     []grpc.DialOption
 	virtualNode    bool
 	ConnectionPool map[string]*grpcNodeConn
@@ -48,7 +42,7 @@ func (node *Node) IsVirtualNode() bool {
 	return node.virtualNode
 }
 
-func NewNode(Name, IpAddr string, port int, virtualNode bool, configs ...grpc.DialOption) *Node {
+func NewNode(Name, IpAddr string, port int32, virtualNode bool, configs ...grpc.DialOption) *Node {
 
 	if ipAddr := net.ParseIP(IpAddr); ipAddr != nil {
 		log.Fatalln("Invalid ip address")
@@ -57,15 +51,13 @@ func NewNode(Name, IpAddr string, port int, virtualNode bool, configs ...grpc.Di
 	config := createGrpcDialConfig(configs...)
 	return &Node{
 		Name:           Name,
-		ID:             getHash(address(IpAddr, port)),
+		Info:             &pb.Node{Address: IpAddr, Port: port}, // TODO
 		SuccessorId:    nil, // TODO
 		PredecessorID:  nil,
 		FingerTable:    nil, //TODO
-		IpAddr:         IpAddr,
 		grpcServer:     grpc.NewServer(),
 		MsgBuffer:      make(chan int),
 		listener:       nil,
-		port:           port,
 		connConfig:     config,
 		virtualNode:    virtualNode,
 		ConnectionPool: make(map[string]*grpcNodeConn),
@@ -73,7 +65,7 @@ func NewNode(Name, IpAddr string, port int, virtualNode bool, configs ...grpc.Di
 }
 
 func (node *Node) getServerAddress() string {
-	return address(node.IpAddr, node.port)
+	return address(node.Info.Address, int(node.Info.Port))
 }
 
 // Start node service by binding to the assigned address to the node
@@ -100,6 +92,21 @@ func (node *Node) Start() *Node {
 
 	return node
 }
+
+
+
+// It immediately closes all connections and listeners from the rpc server
+func (node *Node) Kill(){
+	node.grpcServer.Stop()
+}
+
+// Gracefully closes all connections and listeners from the rpc server
+func (node *Node) Stop(){
+	node.grpcServer.GracefulStop()
+}
+
+
+
 
 // For now accept a string, with the fingertable implementation this will change
 // TODO lookup Node on fingertable
@@ -141,21 +148,14 @@ func createGrpcDialConfig(configs ...grpc.DialOption) []grpc.DialOption {
 }
 
 func NewDefaultNode(ID string, port int) *Node {
-	return NewNode(ID, "localhost", port, false)
+	return NewNode(ID, "localhost", int32(port), false)
 }
 
-func (node *Node) EchoReply(ctx context.Context, pingMsg *pb.PingMessage) (*pb.PingMessage, error) {
 
-	log.Println("RCV - CONTENT: ", pingMsg.Info)
-	if pingMsg.Info != "ACK" {
-		go func(n *Node) {
-			n.MsgBuffer <- ACK
-		}(node)
-	}
-	return &pb.PingMessage{
-		Info: fmt.Sprintf("Sending message to %s", pingMsg.Id),
 
-		Timestamp: timestamppb.Now(),
-	}, nil
 
-}
+
+
+
+
+

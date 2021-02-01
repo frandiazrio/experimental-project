@@ -6,7 +6,7 @@ option go_package = "github.com/frandiazrio/arca/src/api/node";
 import "google/protobuf/timestamp.proto";
 
 
-
+message Empty{}
 
 message PingMessage{
   string Info = 1;
@@ -14,6 +14,13 @@ message PingMessage{
   google.protobuf.Timestamp Timestamp = 3;
 } 
 
+message Node{
+  string address = 1;
+  int32 port = 2;
+}
+
 service NodeAgent{
   rpc echoReply(PingMessage) returns (PingMessage);
+  rpc findSuccesor(Node) returns (Node);
+  rpc addNodeToFingerTable(Node) returns (Empty);
 } 
