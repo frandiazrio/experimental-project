@@ -1,6 +1,7 @@
 package chord
 
 import (
+	"crypto/sha1"
 	"errors"
 	"math/big"
 )
@@ -11,10 +12,9 @@ type fingerEntry struct {
 	ID []byte
 	*Node
 }
+
 // type for the finger table
 type FingerTable []*fingerEntry
-
-
 
 // offset =  (n+2^i) mod (2^m)
 func fingerID(n []byte, i, m int) []byte {
@@ -43,45 +43,42 @@ func fingerID(n []byte, i, m int) []byte {
 	return idInt.Bytes()
 }
 
-func newFingerEntry(id []byte, node *Node)*fingerEntry{
+func newFingerEntry(id []byte, node *Node) *fingerEntry {
 	return &fingerEntry{
-		ID: id,
+		ID:   id,
 		Node: node,
 	}
 }
 
-
-func newFingerTable(tableSize int, n *Node)(*FingerTable, error){
-	if tableSize < 0{
+func newFingerTable(tableSize int, n *Node) (*FingerTable, error) {
+	if tableSize < 0 {
 		return nil, errors.New("Error creating finger table: Size less than 0")
 	}
 	fingertable := make(FingerTable, tableSize)
 
-	for i:=0; i< tableSize; i++{
-		fingertable[i] = newFingerEntry(fingerID(n.Info.Id, i, tableSize), n)
+	for i := 0; i < tableSize; i++ {
+		fingertable[i] = newFingerEntry(fingerID(hashFunc([]byte(n.getServerAddress()), sha1.New()), i, tableSize), n)
+
 	}
-	return &fingertable, nil
+
+
+		return &fingertable, nil
 }
 
-
-func (ft *FingerTable) getIthEntry(i int)(*fingerEntry, error){
-	if  i <0 || i >= len((*ft)){
+func (ft *FingerTable) getIthEntry(i int)(*fingerEntry, error) {
+	if i >= len(*ft){
 		return nil, errors.New("Invalid index")
 	}
 
 	return (*ft)[i], nil
 }
 
-func(ft *FingerTable)getIthFinger(i int)(*Node, error){
+func (ft *FingerTable) getIthFinger(i int) (*Node, error) {
 	entry, err := ft.getIthEntry(i)
 
-	if err != nil{
+	if err != nil {
 		return nil, errors.New("Error getting node: Invalid index")
 	}
 
 	return entry.Node, nil
 }
-
-
-func (ft *FingerTable) 
-
