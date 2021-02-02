@@ -153,9 +153,20 @@ func NewDefaultNode(ID string, port int) *Node {
 // accepts new node to fingertable
 func (node *Node) updateFingerTable(newNode *Node) error{
 	currentNodeAddrHash := getHash(node.getServerAddress())// used to compare with key, and other values in the finger table
-	
-	for _, v := range *node.FingerTable{
+	newNodeAddrHash := getHash(newNode.getServerAddress())	
+	for i, v := range *node.FingerTable{
+		vAddrHash := v.ID
 
+		if isBetween(newNodeAddrHash, currentNodeAddrHash, vAddrHash){
+			
+			entry, err := node.FingerTable.getIthEntry(i)
+			if err != nil{
+				log.Println(err)
+			}
+
+			entry.UpdateValues(newNodeAddrHash, newNode)	
+
+			
 	}
 
 	return nil

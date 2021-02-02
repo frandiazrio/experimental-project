@@ -13,6 +13,11 @@ type fingerEntry struct {
 	*Node
 }
 
+func (fe *fingerEntry)UpdateValues(ID []byte, node *Node){
+	fe.ID = ID
+	fe.Node = node
+}
+	
 // type for the finger table
 type FingerTable []*fingerEntry
 
