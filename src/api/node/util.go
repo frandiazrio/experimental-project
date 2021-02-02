@@ -18,8 +18,8 @@ func isBetween(key, a, b []byte) bool {
 		return bytes.Compare(key, b) == 1 && bytes.Compare(key, a) == -1
 	case -1: // a < b implies key < b and key > a
 		return bytes.Compare(key, b) == -1 && bytes.Compare(key, a) == 1
-	case 0: // a, b are Equal, key cannot be the same as a b by definition
-		return false
+	case 0: // if a and b are equal, check if key is the same. If that is the case simply put in the fingertable
+		return bytes.Compare(a, key) != 0
 
 	}
 

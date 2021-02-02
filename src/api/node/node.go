@@ -2,7 +2,7 @@
 package chord
 
 import (
-
+	"crypto/sha1"
 	"log"
 	"net"
 
@@ -27,7 +27,6 @@ type grpcNodeConn struct {
 type Node struct {
 	Name           string
 	Info             *pb.Node // stores internal node information such as ip address, port, and hash
-	SuccessorId    []byte       //TODO
 	PredecessorID  []byte       //TODO
 	FingerTable    *FingerTable //TODO
 	MsgBuffer      chan int
@@ -52,7 +51,6 @@ func NewNode(Name, IpAddr string, port int32, virtualNode bool, configs ...grpc.
 	return &Node{
 		Name:           Name,
 		Info:             &pb.Node{Address: IpAddr, Port: port}, // TODO
-		SuccessorId:    nil, // TODO
 		PredecessorID:  nil,
 		FingerTable:    nil, //TODO
 		grpcServer:     grpc.NewServer(),
@@ -149,6 +147,18 @@ func createGrpcDialConfig(configs ...grpc.DialOption) []grpc.DialOption {
 
 func NewDefaultNode(ID string, port int) *Node {
 	return NewNode(ID, "localhost", int32(port), false)
+}
+
+
+// accepts new node to fingertable
+func (node *Node) updateFingerTable(newNode *Node) error{
+	currentNodeAddrHash := getHash(node.getServerAddress())// used to compare with key, and other values in the finger table
+	
+	for _, v := range *node.FingerTable{
+
+	}
+
+	return nil
 }
 
 
