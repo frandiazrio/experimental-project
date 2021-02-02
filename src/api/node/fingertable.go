@@ -13,11 +13,11 @@ type fingerEntry struct {
 	*Node
 }
 
-func (fe *fingerEntry)UpdateValues(ID []byte, node *Node){
+func (fe *fingerEntry) UpdateValues(ID []byte, node *Node) {
 	fe.ID = ID
 	fe.Node = node
 }
-	
+
 // type for the finger table
 type FingerTable []*fingerEntry
 
@@ -66,12 +66,11 @@ func newFingerTable(tableSize int, n *Node) (*FingerTable, error) {
 
 	}
 
-
-		return &fingertable, nil
+	return &fingertable, nil
 }
 
-func (ft *FingerTable) getIthEntry(i int)(*fingerEntry, error) {
-	if i >= len(*ft){
+func (ft *FingerTable) getIthEntry(i int) (*fingerEntry, error) {
+	if i >= len(*ft) {
 		return nil, errors.New("Invalid index")
 	}
 

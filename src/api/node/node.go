@@ -2,7 +2,6 @@
 package chord
 
 import (
-	"crypto/sha1"
 	"log"
 	"net"
 
@@ -10,8 +9,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
-
-
 
 type grpcNodeConn struct {
 	TargetID      string
@@ -26,7 +23,7 @@ type grpcNodeConn struct {
 // Node type provides definition of a chord node
 type Node struct {
 	Name           string
-	Info             *pb.Node // stores internal node information such as ip address, port, and hash
+	Info           *pb.Node     // stores internal node information such as ip address, port, and hash
 	PredecessorID  []byte       //TODO
 	FingerTable    *FingerTable //TODO
 	MsgBuffer      chan int
@@ -50,7 +47,7 @@ func NewNode(Name, IpAddr string, port int32, virtualNode bool, configs ...grpc.
 	config := createGrpcDialConfig(configs...)
 	return &Node{
 		Name:           Name,
-		Info:             &pb.Node{Address: IpAddr, Port: port}, // TODO
+		Info:           &pb.Node{Address: IpAddr, Port: port}, // TODO
 		PredecessorID:  nil,
 		FingerTable:    nil, //TODO
 		grpcServer:     grpc.NewServer(),
@@ -91,20 +88,15 @@ func (node *Node) Start() *Node {
 	return node
 }
 
-
-
 // It immediately closes all connections and listeners from the rpc server
-func (node *Node) Kill(){
+func (node *Node) Kill() {
 	node.grpcServer.Stop()
 }
 
 // Gracefully closes all connections and listeners from the rpc server
-func (node *Node) Stop(){
+func (node *Node) Stop() {
 	node.grpcServer.GracefulStop()
 }
-
-
-
 
 // For now accept a string, with the fingertable implementation this will change
 // TODO lookup Node on fingertable
@@ -149,34 +141,25 @@ func NewDefaultNode(ID string, port int) *Node {
 	return NewNode(ID, "localhost", int32(port), false)
 }
 
-
 // accepts new node to fingertable
-func (node *Node) updateFingerTable(newNode *Node) error{
-	currentNodeAddrHash := getHash(node.getServerAddress())// used to compare with key, and other values in the finger table
-	newNodeAddrHash := getHash(newNode.getServerAddress())	
-	for i, v := range *node.FingerTable{
+func (node *Node) updateFingerTable(newNode *Node) error {
+	currentNodeAddrHash := getHash(node.getServerAddress()) // used to compare with key, and other values in the finger table
+	newNodeAddrHash := getHash(newNode.getServerAddress())
+	for i, v := range *node.FingerTable {
 		vAddrHash := v.ID
 
-		if isBetween(newNodeAddrHash, currentNodeAddrHash, vAddrHash){
-			
+		if isBetween(newNodeAddrHash, currentNodeAddrHash, vAddrHash) {
+
 			entry, err := node.FingerTable.getIthEntry(i)
-			if err != nil{
+			if err != nil {
 				log.Println(err)
 			}
 
-			entry.UpdateValues(newNodeAddrHash, newNode)	
+			entry.UpdateValues(newNodeAddrHash, newNode)
 
-			
+		}
+
 	}
 
 	return nil
 }
-
-
-
-
-
-
-
-
-

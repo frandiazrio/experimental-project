@@ -14,7 +14,7 @@ func isEqual(a, b []byte) bool {
 //Compares if key is between (a,b)
 func isBetween(key, a, b []byte) bool {
 	switch bytes.Compare(a, b) {
-		case 1: // a > b, or b < a implies key > b and key < a
+	case 1: // a > b, or b < a implies key > b and key < a
 		return bytes.Compare(key, b) == 1 && bytes.Compare(key, a) == -1
 	case -1: // a < b implies key < b and key > a
 		return bytes.Compare(key, b) == -1 && bytes.Compare(key, a) == 1
@@ -33,7 +33,7 @@ func address(ipaddr string, port int) string {
 	return fmt.Sprintf("%s:%d", ipaddr, port)
 }
 
-func Size(h hash.Hash)int{
+func Size(h hash.Hash) int {
 	return h.Size()
 }
 func hashFunc(key []byte, h hash.Hash) []byte {

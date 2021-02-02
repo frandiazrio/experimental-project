@@ -6,14 +6,14 @@ import (
 	"log"
 	"time"
 
-	"github.com/frandiazrio/arca/src/api/node"
+	chord "github.com/frandiazrio/arca/src/api/node"
 
 	pb "github.com/frandiazrio/arca/src/api/node/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func Ping(n *node.Node) {
+func Ping(n *chord.Node) {
 	for {
 		ctx := context.Background()
 		time.Sleep(time.Second)
@@ -43,11 +43,11 @@ func Ping(n *node.Node) {
 
 	}
 }
-func Acknowledge(n *node.Node) {
+func Acknowledge(n *chord.Node) {
 	for {
 		select {
 		case msg := <-n.MsgBuffer:
-			if msg == node.ACK {
+			if msg == chord.ACK {
 				ctx := context.Background()
 				time.Sleep(time.Second)
 				n.ConnectionPool["node1"] = n.Connect("node1", "localhost", 8081, grpc.WithInsecure())
@@ -83,7 +83,7 @@ func main() {
 		client := pb.NewNodeAgentClient(conn)
 	*/
 
-	n := node.NewDefaultNode("node2", 8082)
+	n := chord.NewDefaultNode("node2", 8082)
 	go Ping(n)
 	go Acknowledge(n)
 	n.Start()

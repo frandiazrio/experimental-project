@@ -8,6 +8,13 @@ import "google/protobuf/timestamp.proto";
 
 message Empty{}
 
+
+message HeartBeat{
+  Node SourceNode= 1;
+  bool Active = 2;
+  google.protobuf.Timestamp Timestamp = 3;
+}
+
 message PingMessage{
   string Info = 1;
   string id = 2;
