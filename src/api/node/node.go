@@ -2,8 +2,10 @@
 package chord
 
 import (
+	"context"
 	"log"
 	"net"
+	"time"
 
 	pb "github.com/frandiazrio/arca/src/api/node/proto"
 	"google.golang.org/grpc"
@@ -24,8 +26,10 @@ type grpcNodeConn struct {
 type Node struct {
 	Name           string
 	Info           *pb.Node     // stores internal node information such as ip address, port, and hash
+	HeartBeatDuration time.Duration
 	PredecessorID  []byte       //TODO
 	FingerTable    *FingerTable //TODO
+	HeartBeatTimer       *time.Timer
 	MsgBuffer      chan int
 	grpcServer     *grpc.Server
 	listener       *net.TCPListener
@@ -38,7 +42,7 @@ func (node *Node) IsVirtualNode() bool {
 	return node.virtualNode
 }
 
-func NewNode(Name, IpAddr string, port int32, virtualNode bool, configs ...grpc.DialOption) *Node {
+func NewNode(Name, IpAddr string, port int32, virtualNode bool, heartBeatDuration time.Duration, configs ...grpc.DialOption) *Node {
 
 	if ipAddr := net.ParseIP(IpAddr); ipAddr != nil {
 		log.Fatalln("Invalid ip address")
@@ -48,8 +52,10 @@ func NewNode(Name, IpAddr string, port int32, virtualNode bool, configs ...grpc.
 	return &Node{
 		Name:           Name,
 		Info:           &pb.Node{Address: IpAddr, Port: port}, // TODO
+		HeartBeatDuration:       heartBeatDuration,
 		PredecessorID:  nil,
-		FingerTable:    nil, //TODO
+		FingerTable:    nil,//TODO
+		HeartBeatTimer:      time.NewTimer(heartBeatDuration),
 		grpcServer:     grpc.NewServer(),
 		MsgBuffer:      make(chan int),
 		listener:       nil,
@@ -90,11 +96,13 @@ func (node *Node) Start() *Node {
 
 // It immediately closes all connections and listeners from the rpc server
 func (node *Node) Kill() {
+	close(node.MsgBuffer)
 	node.grpcServer.Stop()
 }
 
 // Gracefully closes all connections and listeners from the rpc server
 func (node *Node) Stop() {
+	close(node.MsgBuffer)
 	node.grpcServer.GracefulStop()
 }
 
@@ -138,7 +146,7 @@ func createGrpcDialConfig(configs ...grpc.DialOption) []grpc.DialOption {
 }
 
 func NewDefaultNode(ID string, port int) *Node {
-	return NewNode(ID, "localhost", int32(port), false)
+	return NewNode(ID, "localhost", int32(port), false, time.Second*4)
 }
 
 // accepts new node to fingertable
@@ -162,4 +170,27 @@ func (node *Node) updateFingerTable(newNode *Node) error {
 	}
 
 	return nil
+}
+
+
+func (node *Node) HeartBeat(){
+	ctx := context.Background()
+	for{
+		select{
+		case <- node.HeartBeatTimer.C:
+			node.SendHeartBeat(ctx, nil)
+		}
+	}
+}
+
+
+
+func (node *Node)AcknowledgeHeartBeat(targetNodeId string, hb *pb.HeartBeat,  err error){
+	if err != nil{
+		clnt := node.ConnectionPool[targetNodeId].Client
+
+		if clnt != nil{ // If client is nil attempt to connect and ack
+
+		}
+	}	
 }

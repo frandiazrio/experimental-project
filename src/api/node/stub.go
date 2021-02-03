@@ -37,3 +37,16 @@ func (node *Node) FindSuccesor(ctx context.Context, targetNode *pb.Node) (*pb.No
 func (node *Node) AddNodeToFingerTable(ctx context.Context, targetNode *pb.Node) (*pb.Empty, error) {
 	return nil, nil
 }
+
+func (node *Node) ConfirmHeartBeat(ctx context.Context,  hb *pb.HeartBeat) (*pb.Bool, error) {
+	if hb != nil{
+		return &pb.Bool{Value:true}, nil 
+	}
+	return &pb.Bool{Value:false}, nil
+}
+func (node *Node)SendHeartBeat(ctx context.Context, void *pb.Empty) (*pb.HeartBeat, error) {
+	return &pb.HeartBeat{
+		SourceNode: node.Info,	
+		Timestamp: timestamppb.Now(),
+	}, nil
+}

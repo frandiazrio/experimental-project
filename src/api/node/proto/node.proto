@@ -8,11 +8,13 @@ import "google/protobuf/timestamp.proto";
 
 message Empty{}
 
+message Bool{
+  bool value=1;
+}
 
 message HeartBeat{
   Node SourceNode= 1;
-  bool Active = 2;
-  google.protobuf.Timestamp Timestamp = 3;
+  google.protobuf.Timestamp Timestamp = 2;
 }
 
 message PingMessage{
@@ -30,4 +32,6 @@ service NodeAgent{
   rpc echoReply(PingMessage) returns (PingMessage);
   rpc findSuccesor(Node) returns (Node);
   rpc addNodeToFingerTable(Node) returns (Empty);
+  rpc ConfirmHeartBeat(HeartBeat) returns (Bool);
+  rpc SendHeartBeat(Empty) returns (HeartBeat);
 } 
