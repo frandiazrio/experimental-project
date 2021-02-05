@@ -6,5 +6,7 @@ const (
 	CONNECT
 	RCV
 	STOP
+	KILL
 	DONE
+	RESTART
 )

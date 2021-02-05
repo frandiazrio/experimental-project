@@ -314,25 +314,23 @@ var file_node_proto_rawDesc = []byte{
 	0x64, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x12, 0x0a, 0x04,
 	0x70, 0x6f, 0x72, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x6f, 0x72, 0x74,
-	0x32, 0xf7, 0x01, 0x0a, 0x09, 0x4e, 0x6f, 0x64, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x12, 0x31,
-	0x0a, 0x09, 0x65, 0x63, 0x68, 0x6f, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x11, 0x2e, 0x6e, 0x6f,
-	0x64, 0x65, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x11,
+	0x32, 0xcd, 0x01, 0x0a, 0x09, 0x4e, 0x6f, 0x64, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x12, 0x34,
+	0x0a, 0x0c, 0x65, 0x63, 0x68, 0x6f, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x52, 0x50, 0x43, 0x12, 0x11,
 	0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
-	0x65, 0x12, 0x26, 0x0a, 0x0c, 0x66, 0x69, 0x6e, 0x64, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x6f,
-	0x72, 0x12, 0x0a, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x1a, 0x0a, 0x2e,
-	0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x12, 0x2f, 0x0a, 0x14, 0x61, 0x64, 0x64,
-	0x4e, 0x6f, 0x64, 0x65, 0x54, 0x6f, 0x46, 0x69, 0x6e, 0x67, 0x65, 0x72, 0x54, 0x61, 0x62, 0x6c,
-	0x65, 0x12, 0x0a, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x1a, 0x0b, 0x2e,
-	0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x2f, 0x0a, 0x10, 0x43, 0x6f,
-	0x6e, 0x66, 0x69, 0x72, 0x6d, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74, 0x12, 0x0f,
-	0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74, 0x1a,
-	0x0a, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x12, 0x2d, 0x0a, 0x0d, 0x53,
-	0x65, 0x6e, 0x64, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74, 0x12, 0x0b, 0x2e, 0x6e,
-	0x6f, 0x64, 0x65, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x0f, 0x2e, 0x6e, 0x6f, 0x64, 0x65,
-	0x2e, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74, 0x42, 0x2a, 0x5a, 0x28, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x66, 0x72, 0x61, 0x6e, 0x64, 0x69, 0x61,
-	0x7a, 0x72, 0x69, 0x6f, 0x2f, 0x61, 0x72, 0x63, 0x61, 0x2f, 0x73, 0x72, 0x63, 0x2f, 0x61, 0x70,
-	0x69, 0x2f, 0x6e, 0x6f, 0x64, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x1a, 0x11, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x4d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x12, 0x29, 0x0a, 0x0f, 0x66, 0x69, 0x6e, 0x64, 0x53, 0x75, 0x63, 0x63,
+	0x65, 0x73, 0x6f, 0x72, 0x52, 0x50, 0x43, 0x12, 0x0a, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x4e,
+	0x6f, 0x64, 0x65, 0x1a, 0x0a, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x12,
+	0x32, 0x0a, 0x17, 0x61, 0x64, 0x64, 0x4e, 0x6f, 0x64, 0x65, 0x54, 0x6f, 0x46, 0x69, 0x6e, 0x67,
+	0x65, 0x72, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x50, 0x43, 0x12, 0x0a, 0x2e, 0x6e, 0x6f, 0x64,
+	0x65, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x1a, 0x0b, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x45, 0x6d,
+	0x70, 0x74, 0x79, 0x12, 0x2b, 0x0a, 0x0c, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74,
+	0x52, 0x50, 0x43, 0x12, 0x0f, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x48, 0x65, 0x61, 0x72, 0x74,
+	0x42, 0x65, 0x61, 0x74, 0x1a, 0x0a, 0x2e, 0x6e, 0x6f, 0x64, 0x65, 0x2e, 0x42, 0x6f, 0x6f, 0x6c,
+	0x42, 0x2a, 0x5a, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x66,
+	0x72, 0x61, 0x6e, 0x64, 0x69, 0x61, 0x7a, 0x72, 0x69, 0x6f, 0x2f, 0x61, 0x72, 0x63, 0x61, 0x2f,
+	0x73, 0x72, 0x63, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f, 0x64, 0x65, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -360,18 +358,16 @@ var file_node_proto_depIdxs = []int32{
 	4, // 0: node.HeartBeat.SourceNode:type_name -> node.Node
 	5, // 1: node.HeartBeat.Timestamp:type_name -> google.protobuf.Timestamp
 	5, // 2: node.PingMessage.Timestamp:type_name -> google.protobuf.Timestamp
-	3, // 3: node.NodeAgent.echoReply:input_type -> node.PingMessage
-	4, // 4: node.NodeAgent.findSuccesor:input_type -> node.Node
-	4, // 5: node.NodeAgent.addNodeToFingerTable:input_type -> node.Node
-	2, // 6: node.NodeAgent.ConfirmHeartBeat:input_type -> node.HeartBeat
-	0, // 7: node.NodeAgent.SendHeartBeat:input_type -> node.Empty
-	3, // 8: node.NodeAgent.echoReply:output_type -> node.PingMessage
-	4, // 9: node.NodeAgent.findSuccesor:output_type -> node.Node
-	0, // 10: node.NodeAgent.addNodeToFingerTable:output_type -> node.Empty
-	1, // 11: node.NodeAgent.ConfirmHeartBeat:output_type -> node.Bool
-	2, // 12: node.NodeAgent.SendHeartBeat:output_type -> node.HeartBeat
-	8, // [8:13] is the sub-list for method output_type
-	3, // [3:8] is the sub-list for method input_type
+	3, // 3: node.NodeAgent.echoReplyRPC:input_type -> node.PingMessage
+	4, // 4: node.NodeAgent.findSuccesorRPC:input_type -> node.Node
+	4, // 5: node.NodeAgent.addNodeToFingerTableRPC:input_type -> node.Node
+	2, // 6: node.NodeAgent.HeartBeatRPC:input_type -> node.HeartBeat
+	3, // 7: node.NodeAgent.echoReplyRPC:output_type -> node.PingMessage
+	4, // 8: node.NodeAgent.findSuccesorRPC:output_type -> node.Node
+	0, // 9: node.NodeAgent.addNodeToFingerTableRPC:output_type -> node.Empty
+	1, // 10: node.NodeAgent.HeartBeatRPC:output_type -> node.Bool
+	7, // [7:11] is the sub-list for method output_type
+	3, // [3:7] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name
 	3, // [3:3] is the sub-list for extension extendee
 	0, // [0:3] is the sub-list for field type_name
@@ -476,11 +472,10 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type NodeAgentClient interface {
-	EchoReply(ctx context.Context, in *PingMessage, opts ...grpc.CallOption) (*PingMessage, error)
-	FindSuccesor(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Node, error)
-	AddNodeToFingerTable(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Empty, error)
-	ConfirmHeartBeat(ctx context.Context, in *HeartBeat, opts ...grpc.CallOption) (*Bool, error)
-	SendHeartBeat(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HeartBeat, error)
+	EchoReplyRPC(ctx context.Context, in *PingMessage, opts ...grpc.CallOption) (*PingMessage, error)
+	FindSuccesorRPC(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Node, error)
+	AddNodeToFingerTableRPC(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Empty, error)
+	HeartBeatRPC(ctx context.Context, in *HeartBeat, opts ...grpc.CallOption) (*Bool, error)
 }
 
 type nodeAgentClient struct {
@@ -491,45 +486,36 @@ func NewNodeAgentClient(cc grpc.ClientConnInterface) NodeAgentClient {
 	return &nodeAgentClient{cc}
 }
 
-func (c *nodeAgentClient) EchoReply(ctx context.Context, in *PingMessage, opts ...grpc.CallOption) (*PingMessage, error) {
+func (c *nodeAgentClient) EchoReplyRPC(ctx context.Context, in *PingMessage, opts ...grpc.CallOption) (*PingMessage, error) {
 	out := new(PingMessage)
-	err := c.cc.Invoke(ctx, "/node.NodeAgent/echoReply", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/node.NodeAgent/echoReplyRPC", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodeAgentClient) FindSuccesor(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Node, error) {
+func (c *nodeAgentClient) FindSuccesorRPC(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Node, error) {
 	out := new(Node)
-	err := c.cc.Invoke(ctx, "/node.NodeAgent/findSuccesor", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/node.NodeAgent/findSuccesorRPC", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodeAgentClient) AddNodeToFingerTable(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Empty, error) {
+func (c *nodeAgentClient) AddNodeToFingerTableRPC(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Empty, error) {
 	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/node.NodeAgent/addNodeToFingerTable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/node.NodeAgent/addNodeToFingerTableRPC", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodeAgentClient) ConfirmHeartBeat(ctx context.Context, in *HeartBeat, opts ...grpc.CallOption) (*Bool, error) {
+func (c *nodeAgentClient) HeartBeatRPC(ctx context.Context, in *HeartBeat, opts ...grpc.CallOption) (*Bool, error) {
 	out := new(Bool)
-	err := c.cc.Invoke(ctx, "/node.NodeAgent/ConfirmHeartBeat", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *nodeAgentClient) SendHeartBeat(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HeartBeat, error) {
-	out := new(HeartBeat)
-	err := c.cc.Invoke(ctx, "/node.NodeAgent/SendHeartBeat", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/node.NodeAgent/HeartBeatRPC", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -538,123 +524,101 @@ func (c *nodeAgentClient) SendHeartBeat(ctx context.Context, in *Empty, opts ...
 
 // NodeAgentServer is the server API for NodeAgent service.
 type NodeAgentServer interface {
-	EchoReply(context.Context, *PingMessage) (*PingMessage, error)
-	FindSuccesor(context.Context, *Node) (*Node, error)
-	AddNodeToFingerTable(context.Context, *Node) (*Empty, error)
-	ConfirmHeartBeat(context.Context, *HeartBeat) (*Bool, error)
-	SendHeartBeat(context.Context, *Empty) (*HeartBeat, error)
+	EchoReplyRPC(context.Context, *PingMessage) (*PingMessage, error)
+	FindSuccesorRPC(context.Context, *Node) (*Node, error)
+	AddNodeToFingerTableRPC(context.Context, *Node) (*Empty, error)
+	HeartBeatRPC(context.Context, *HeartBeat) (*Bool, error)
 }
 
 // UnimplementedNodeAgentServer can be embedded to have forward compatible implementations.
 type UnimplementedNodeAgentServer struct {
 }
 
-func (*UnimplementedNodeAgentServer) EchoReply(context.Context, *PingMessage) (*PingMessage, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EchoReply not implemented")
+func (*UnimplementedNodeAgentServer) EchoReplyRPC(context.Context, *PingMessage) (*PingMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EchoReplyRPC not implemented")
 }
-func (*UnimplementedNodeAgentServer) FindSuccesor(context.Context, *Node) (*Node, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindSuccesor not implemented")
+func (*UnimplementedNodeAgentServer) FindSuccesorRPC(context.Context, *Node) (*Node, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindSuccesorRPC not implemented")
 }
-func (*UnimplementedNodeAgentServer) AddNodeToFingerTable(context.Context, *Node) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddNodeToFingerTable not implemented")
+func (*UnimplementedNodeAgentServer) AddNodeToFingerTableRPC(context.Context, *Node) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddNodeToFingerTableRPC not implemented")
 }
-func (*UnimplementedNodeAgentServer) ConfirmHeartBeat(context.Context, *HeartBeat) (*Bool, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ConfirmHeartBeat not implemented")
-}
-func (*UnimplementedNodeAgentServer) SendHeartBeat(context.Context, *Empty) (*HeartBeat, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendHeartBeat not implemented")
+func (*UnimplementedNodeAgentServer) HeartBeatRPC(context.Context, *HeartBeat) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HeartBeatRPC not implemented")
 }
 
 func RegisterNodeAgentServer(s *grpc.Server, srv NodeAgentServer) {
 	s.RegisterService(&_NodeAgent_serviceDesc, srv)
 }
 
-func _NodeAgent_EchoReply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _NodeAgent_EchoReplyRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PingMessage)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodeAgentServer).EchoReply(ctx, in)
+		return srv.(NodeAgentServer).EchoReplyRPC(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/node.NodeAgent/EchoReply",
+		FullMethod: "/node.NodeAgent/EchoReplyRPC",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeAgentServer).EchoReply(ctx, req.(*PingMessage))
+		return srv.(NodeAgentServer).EchoReplyRPC(ctx, req.(*PingMessage))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _NodeAgent_FindSuccesor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _NodeAgent_FindSuccesorRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Node)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodeAgentServer).FindSuccesor(ctx, in)
+		return srv.(NodeAgentServer).FindSuccesorRPC(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/node.NodeAgent/FindSuccesor",
+		FullMethod: "/node.NodeAgent/FindSuccesorRPC",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeAgentServer).FindSuccesor(ctx, req.(*Node))
+		return srv.(NodeAgentServer).FindSuccesorRPC(ctx, req.(*Node))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _NodeAgent_AddNodeToFingerTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _NodeAgent_AddNodeToFingerTableRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Node)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodeAgentServer).AddNodeToFingerTable(ctx, in)
+		return srv.(NodeAgentServer).AddNodeToFingerTableRPC(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/node.NodeAgent/AddNodeToFingerTable",
+		FullMethod: "/node.NodeAgent/AddNodeToFingerTableRPC",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeAgentServer).AddNodeToFingerTable(ctx, req.(*Node))
+		return srv.(NodeAgentServer).AddNodeToFingerTableRPC(ctx, req.(*Node))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _NodeAgent_ConfirmHeartBeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _NodeAgent_HeartBeatRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HeartBeat)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodeAgentServer).ConfirmHeartBeat(ctx, in)
+		return srv.(NodeAgentServer).HeartBeatRPC(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/node.NodeAgent/ConfirmHeartBeat",
+		FullMethod: "/node.NodeAgent/HeartBeatRPC",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeAgentServer).ConfirmHeartBeat(ctx, req.(*HeartBeat))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NodeAgent_SendHeartBeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeAgentServer).SendHeartBeat(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/node.NodeAgent/SendHeartBeat",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeAgentServer).SendHeartBeat(ctx, req.(*Empty))
+		return srv.(NodeAgentServer).HeartBeatRPC(ctx, req.(*HeartBeat))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -664,24 +628,20 @@ var _NodeAgent_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*NodeAgentServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "echoReply",
-			Handler:    _NodeAgent_EchoReply_Handler,
+			MethodName: "echoReplyRPC",
+			Handler:    _NodeAgent_EchoReplyRPC_Handler,
 		},
 		{
-			MethodName: "findSuccesor",
-			Handler:    _NodeAgent_FindSuccesor_Handler,
+			MethodName: "findSuccesorRPC",
+			Handler:    _NodeAgent_FindSuccesorRPC_Handler,
 		},
 		{
-			MethodName: "addNodeToFingerTable",
-			Handler:    _NodeAgent_AddNodeToFingerTable_Handler,
+			MethodName: "addNodeToFingerTableRPC",
+			Handler:    _NodeAgent_AddNodeToFingerTableRPC_Handler,
 		},
 		{
-			MethodName: "ConfirmHeartBeat",
-			Handler:    _NodeAgent_ConfirmHeartBeat_Handler,
-		},
-		{
-			MethodName: "SendHeartBeat",
-			Handler:    _NodeAgent_SendHeartBeat_Handler,
+			MethodName: "HeartBeatRPC",
+			Handler:    _NodeAgent_HeartBeatRPC_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

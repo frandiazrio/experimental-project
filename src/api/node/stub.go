@@ -11,7 +11,7 @@ import (
 
 // Implement NodeAgentServer interface for the stub on the rpc node
 
-func (node *Node) EchoReply(ctx context.Context, pingMsg *pb.PingMessage) (*pb.PingMessage, error) {
+func (node *Node) EchoReplyRPC(ctx context.Context, pingMsg *pb.PingMessage) (*pb.PingMessage, error) {
 
 	log.Println("RCV - CONTENT: ", pingMsg.Info)
 	if pingMsg.Info != "ACK" {
@@ -29,24 +29,19 @@ func (node *Node) EchoReply(ctx context.Context, pingMsg *pb.PingMessage) (*pb.P
 }
 
 //TODO
-func (node *Node) FindSuccesor(ctx context.Context, targetNode *pb.Node) (*pb.Node, error) {
+func (node *Node) FindSuccesorRPC(ctx context.Context, targetNode *pb.Node) (*pb.Node, error) {
 	return nil, nil
 }
 
 //TODO (node needs to broadcast to another node that is exists and update fingertable if necessary)
-func (node *Node) AddNodeToFingerTable(ctx context.Context, targetNode *pb.Node) (*pb.Empty, error) {
+func (node *Node) AddNodeToFingerTableRPC(ctx context.Context, targetNode *pb.Node) (*pb.Empty, error) {
 	return nil, nil
 }
 
-func (node *Node) ConfirmHeartBeat(ctx context.Context,  hb *pb.HeartBeat) (*pb.Bool, error) {
-	if hb != nil{
-		return &pb.Bool{Value:true}, nil 
-	}
-	return &pb.Bool{Value:false}, nil
-}
-func (node *Node)SendHeartBeat(ctx context.Context, void *pb.Empty) (*pb.HeartBeat, error) {
-	return &pb.HeartBeat{
-		SourceNode: node.Info,	
-		Timestamp: timestamppb.Now(),
+func (node *Node) HeartBeatRPC(ctx context.Context, hb *pb.HeartBeat) (*pb.Bool, error) {
+	
+	// return True because heartbeat was received
+	return &pb.Bool{
+		Value: true,
 	}, nil
 }

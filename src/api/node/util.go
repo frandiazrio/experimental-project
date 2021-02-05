@@ -3,8 +3,12 @@ package chord
 import (
 	"bytes"
 	"crypto/sha1"
+	"errors"
 	"fmt"
 	"hash"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 )
 
 func isEqual(a, b []byte) bool {
@@ -44,7 +48,24 @@ func hashFunc(key []byte, h hash.Hash) []byte {
 	return h.Sum(nil)
 }
 func getHash(idKey string) []byte {
-
 	return hashFunc([]byte(idKey), sha1.New())
+}
+
+// Creates a grpc Dial Options slice
+func createGrpcDialConfig(configs ...grpc.DialOption) []grpc.DialOption {
+	config := []grpc.DialOption{}
+	for _, cfg := range configs {
+		config = append(config, cfg)
+	}
+	return config
+}
+
+func validConnState(conn *grpc.ClientConn) bool {
+	if conn != nil {
+		st := conn.GetState()
+		return (st != connectivity.Shutdown || st != connectivity.TransientFailure)
+	}
+
+	return false
 
 }

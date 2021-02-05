@@ -29,9 +29,8 @@ message Node{
 }
 
 service NodeAgent{
-  rpc echoReply(PingMessage) returns (PingMessage);
-  rpc findSuccesor(Node) returns (Node);
-  rpc addNodeToFingerTable(Node) returns (Empty);
-  rpc ConfirmHeartBeat(HeartBeat) returns (Bool);
-  rpc SendHeartBeat(Empty) returns (HeartBeat);
+  rpc echoReplyRPC(PingMessage) returns (PingMessage);
+  rpc findSuccesorRPC(Node) returns (Node);
+  rpc addNodeToFingerTableRPC(Node) returns (Empty);
+  rpc HeartBeatRPC(HeartBeat) returns (Bool);
 } 

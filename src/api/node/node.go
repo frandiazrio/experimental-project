@@ -24,18 +24,19 @@ type grpcNodeConn struct {
 
 // Node type provides definition of a chord node
 type Node struct {
-	Name           string
-	Info           *pb.Node     // stores internal node information such as ip address, port, and hash
+	Name              string
+	Active            bool
+	Info              *pb.Node //stores internal node information such as ip address, port, and hash
 	HeartBeatDuration time.Duration
-	PredecessorID  []byte       //TODO
-	FingerTable    *FingerTable //TODO
-	HeartBeatTimer       *time.Timer
-	MsgBuffer      chan int
-	grpcServer     *grpc.Server
-	listener       *net.TCPListener
-	connConfig     []grpc.DialOption
-	virtualNode    bool
-	ConnectionPool map[string]*grpcNodeConn
+	PredecessorID     []byte       //TODO
+	FingerTable       *FingerTable //TODO
+	HeartBeatTicker    *time.Ticker
+	MsgBuffer         chan int
+	grpcServer        *grpc.Server
+	listener          *net.TCPListener
+	connConfig        []grpc.DialOption
+	virtualNode       bool
+	ConnectionPool    map[string]*grpcNodeConn
 }
 
 func (node *Node) IsVirtualNode() bool {
@@ -50,18 +51,19 @@ func NewNode(Name, IpAddr string, port int32, virtualNode bool, heartBeatDuratio
 
 	config := createGrpcDialConfig(configs...)
 	return &Node{
-		Name:           Name,
-		Info:           &pb.Node{Address: IpAddr, Port: port}, // TODO
-		HeartBeatDuration:       heartBeatDuration,
-		PredecessorID:  nil,
-		FingerTable:    nil,//TODO
-		HeartBeatTimer:      time.NewTimer(heartBeatDuration),
-		grpcServer:     grpc.NewServer(),
-		MsgBuffer:      make(chan int),
-		listener:       nil,
-		connConfig:     config,
-		virtualNode:    virtualNode,
-		ConnectionPool: make(map[string]*grpcNodeConn),
+		Name:              Name,
+		Active:            false,
+		Info:              &pb.Node{Address: IpAddr, Port: port}, // TODO
+		HeartBeatDuration: heartBeatDuration,
+		PredecessorID:     nil,
+		FingerTable:       nil, //TODO
+		HeartBeatTicker:    time.NewTicker(heartBeatDuration),
+		grpcServer:        grpc.NewServer(),
+		MsgBuffer:         make(chan int),
+		listener:          nil,
+		connConfig:        config,
+		virtualNode:       virtualNode,
+		ConnectionPool:    make(map[string]*grpcNodeConn),
 	}
 }
 
@@ -90,28 +92,33 @@ func (node *Node) Start() *Node {
 		log.Println("Error starting server")
 		log.Fatal(err)
 	}
-
+	node.Active = true
 	return node
 }
 
 // It immediately closes all connections and listeners from the rpc server
 func (node *Node) Kill() {
+	node.HeartBeatTicker.Stop()
 	close(node.MsgBuffer)
 	node.grpcServer.Stop()
 }
 
 // Gracefully closes all connections and listeners from the rpc server
 func (node *Node) Stop() {
+	node.HeartBeatTicker.Stop()
 	close(node.MsgBuffer)
 	node.grpcServer.GracefulStop()
 }
+
 
 // For now accept a string, with the fingertable implementation this will change
 // TODO lookup Node on fingertable
 // connect to targetNode ip and port and returns a client that can perform the grpc calls
 
 func (node *Node) Connect(targetID, targetIPAddr string, targetPort int, config ...grpc.DialOption) *grpcNodeConn {
-	conn, err := grpc.Dial(address(targetIPAddr, targetPort), config...)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*node.HeartBeatDuration) // Use 3 HeartBeats before cancelling
+	defer cancel()
+	conn, err := grpc.DialContext(ctx, address(targetIPAddr, targetPort), config...)
 
 	if err != nil {
 		// Error establising connection
@@ -119,7 +126,7 @@ func (node *Node) Connect(targetID, targetIPAddr string, targetPort int, config 
 	}
 
 	client := pb.NewNodeAgentClient(conn)
-	return &grpcNodeConn{
+	grpcConn := grpcNodeConn{
 		TargetID:      targetID,
 		TargetIPAddr:  targetIPAddr,
 		TargetPort:    targetPort,
@@ -128,6 +135,11 @@ func (node *Node) Connect(targetID, targetIPAddr string, targetPort int, config 
 		LastTimeStamp: timestamppb.Now(),
 		Active:        true,
 	}
+
+	node.ConnectionPool[address(targetIPAddr, targetPort)] = &grpcConn
+
+	return &grpcConn
+
 }
 
 // Hashes the nodes ip address to get the node id
@@ -135,18 +147,8 @@ func (node *Node) GetNodeId() []byte {
 	return getHash(node.getServerAddress())
 }
 
-// Creates a grpc Dial Options slice
-func createGrpcDialConfig(configs ...grpc.DialOption) []grpc.DialOption {
-	config := []grpc.DialOption{}
-
-	for _, cfg := range configs {
-		config = append(config, cfg)
-	}
-	return config
-}
-
 func NewDefaultNode(ID string, port int) *Node {
-	return NewNode(ID, "localhost", int32(port), false, time.Second*4)
+	return NewNode(ID, "localhost", int32(port), false, time.Second*4, grpc.WithInsecure())
 }
 
 // accepts new node to fingertable
@@ -171,26 +173,50 @@ func (node *Node) updateFingerTable(newNode *Node) error {
 
 	return nil
 }
+// Check to see if node has a connection with a targetNode
+func (node *Node) CheckConnection(targetNodeAddr string) bool {
+	// first check to see if it is in the connection pool
 
+	nodeConn := node.ConnectionPool[targetNodeAddr]
 
-func (node *Node) HeartBeat(){
-	ctx := context.Background()
-	for{
-		select{
-		case <- node.HeartBeatTimer.C:
-			node.SendHeartBeat(ctx, nil)
-		}
+	if validConnState(nodeConn.Conn) {
+		return true
 	}
+
+	return false
 }
 
+// Send HeartBeat to the ipaddress of a targetNode
+// this communicates that current node (node) is active
+func (node *Node) SendHeartBeat(targetNode *Node) {
 
+	go func() {
+		ctx := context.Background()
 
-func (node *Node)AcknowledgeHeartBeat(targetNodeId string, hb *pb.HeartBeat,  err error){
-	if err != nil{
+		for {
+			select {
+			case <-node.HeartBeatTicker.C:
+				node.HeartBeatRPC(ctx, nil)
+			}
+		}
+	}()
+}
+
+func (node *Node) ReceiveHeartBeat(){
+
+}
+
+//AcknowledgeHeartBeat method will try to send a heartbeat to the targetNodeID.
+// If the our srcNode does not have a connection in the ConnectionPool, it will attempt to reconnect
+// for a certain amount of time.
+func (node *Node) AcknowledgeHeartBeat(targetNodeId string, hb *pb.HeartBeat, err error) {
+	if err != nil {
 		clnt := node.ConnectionPool[targetNodeId].Client
 
-		if clnt != nil{ // If client is nil attempt to connect and ack
+		if clnt == nil { // If client is nil attempt to connect and ack
+
+		} else {
 
 		}
-	}	
+	}
 }
