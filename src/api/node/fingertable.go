@@ -4,16 +4,18 @@ import (
 	"crypto/sha1"
 	"errors"
 	"math/big"
+
+	pb "github.com/frandiazrio/arca/src/api/node/proto"
 )
 
 // type for the entries in the fingertable
 // Every finger entry will contain the hash id of the node and a pointer to the node the correspoding id belongs to
 type fingerEntry struct {
 	ID []byte
-	*Node
+	*pb.Node
 }
 
-func (fe *fingerEntry) UpdateValues(ID []byte, node *Node) {
+func (fe *fingerEntry) UpdateValues(ID []byte, node *pb.Node) {
 	fe.ID = ID
 	fe.Node = node
 }
@@ -48,21 +50,22 @@ func fingerID(n []byte, i, m int) []byte {
 	return idInt.Bytes()
 }
 
-func newFingerEntry(id []byte, node *Node) *fingerEntry {
+func newFingerEntry(id []byte, node *pb.Node) *fingerEntry {
 	return &fingerEntry{
 		ID:   id,
 		Node: node,
 	}
 }
 
-func newFingerTable(tableSize int, n *Node) (*FingerTable, error) {
+func newFingerTable(tableSize int, n *pb.Node) (*FingerTable, error) {
 	if tableSize < 0 {
 		return nil, errors.New("Error creating finger table: Size less than 0")
 	}
 	fingertable := make(FingerTable, tableSize)
 
 	for i := 0; i < tableSize; i++ {
-		fingertable[i] = newFingerEntry(fingerID(hashFunc([]byte(n.getServerAddress()), sha1.New()), i, tableSize), n)
+		addr := address(n.Address, int(n.Port))
+		fingertable[i] = newFingerEntry(fingerID(hashFunc([]byte(addr), sha1.New()), i, tableSize), n)
 
 	}
 
@@ -77,7 +80,7 @@ func (ft *FingerTable) getIthEntry(i int) (*fingerEntry, error) {
 	return (*ft)[i], nil
 }
 
-func (ft *FingerTable) getIthFinger(i int) (*Node, error) {
+func (ft *FingerTable) getIthFinger(i int) (*pb.Node, error) {
 	entry, err := ft.getIthEntry(i)
 
 	if err != nil {

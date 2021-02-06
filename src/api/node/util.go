@@ -62,8 +62,8 @@ func createGrpcDialConfig(configs ...grpc.DialOption) []grpc.DialOption {
 func validConnState(conn *grpc.ClientConn) bool {
 	if conn != nil {
 		st := conn.GetState()
-		return st != connectivity.Shutdown && st != connectivity.TransientFailure 
-		 
+		return st != connectivity.Shutdown && st != connectivity.TransientFailure
+
 	}
 
 	return false

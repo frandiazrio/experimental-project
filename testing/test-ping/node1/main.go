@@ -15,7 +15,7 @@ func Ping(n *chord.Node) {
 	for {
 		ctx := context.Background()
 		time.Sleep(3*time.Second)
-		n.Connect("node2", "localhost", 8082, grpc.WithInsecure())
+		n.Connect("localhost", 8082, grpc.WithInsecure())
 		reply, err := n.ConnectionPool["localhost:8082"].Client.EchoReplyRPC(
 			ctx,
 			&pb.PingMessage{
@@ -26,7 +26,6 @@ func Ping(n *chord.Node) {
 		if err != nil {
 			log.Println(err)
 		}
-
 		fmt.Println(reply.Info)
 		fmt.Println(reply.Id)
 		//n.ConnectionPool["node2"].Conn.Close()
@@ -46,7 +45,7 @@ func Acknowledge(n *chord.Node) {
 			if msg == chord.ACK {
 				ctx := context.Background()
 				time.Sleep(time.Second)
-				n.Connect("node2", "localhost", 8082, grpc.WithInsecure())
+				n.Connect("localhost", 8082, grpc.WithInsecure())
 
 				reply, err := n.ConnectionPool["localhost:8082"].Client.EchoReplyRPC(
 					ctx,

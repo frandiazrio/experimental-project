@@ -26,11 +26,11 @@ type grpcNodeConn struct {
 type Node struct {
 	Name              string
 	Active            bool
-	Info              *pb.Node //stores internal node information such as ip address, port, and hash
+	Info              *pb.Node //
 	HeartBeatDuration time.Duration
 	PredecessorID     []byte       //TODO
 	FingerTable       *FingerTable //TODO
-	HeartBeatTicker    *time.Ticker
+	HeartBeatTicker   *time.Ticker
 	MsgBuffer         chan int
 	grpcServer        *grpc.Server
 	listener          *net.TCPListener
@@ -57,7 +57,7 @@ func NewNode(Name, IpAddr string, port int32, virtualNode bool, heartBeatDuratio
 		HeartBeatDuration: heartBeatDuration,
 		PredecessorID:     nil,
 		FingerTable:       nil, //TODO
-		HeartBeatTicker:    time.NewTicker(heartBeatDuration),
+		HeartBeatTicker:   time.NewTicker(heartBeatDuration),
 		grpcServer:        grpc.NewServer(),
 		MsgBuffer:         make(chan int),
 		listener:          nil,
@@ -110,24 +110,31 @@ func (node *Node) Stop() {
 	node.grpcServer.GracefulStop()
 }
 
-
 // For now accept a string, with the fingertable implementation this will change
 // TODO lookup Node on fingertable
 // connect to targetNode ip and port and returns a client that can perform the grpc calls
 
-func (node *Node) Connect(targetID, targetIPAddr string, targetPort int, config ...grpc.DialOption) *grpcNodeConn {
+func (node *Node) Connect(targetIPAddr string, targetPort int, config ...grpc.DialOption) *grpcNodeConn {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*node.HeartBeatDuration) // Use 3 HeartBeats before cancelling
 	defer cancel()
-	conn, err := grpc.DialContext(ctx, address(targetIPAddr, targetPort), config...)
 
+	var conn *grpc.ClientConn
+	var err error
+	if len(config) == 0 { // Use some default grpc DialOption (meh)
+		conn, err = grpc.DialContext(ctx, address(targetIPAddr, targetPort), grpc.WithInsecure())
+	} else {
+
+		conn, err = grpc.DialContext(ctx, address(targetIPAddr, targetPort), config...)
+	}
 	if err != nil {
 		// Error establising connection
 		log.Fatal(err)
 	}
 
+	addr := address(targetIPAddr, targetPort)
 	client := pb.NewNodeAgentClient(conn)
 	grpcConn := grpcNodeConn{
-		TargetID:      targetID,
+		TargetID:      addr, // We can later hash this to get a hash id
 		TargetIPAddr:  targetIPAddr,
 		TargetPort:    targetPort,
 		Client:        client,
@@ -165,7 +172,7 @@ func (node *Node) updateFingerTable(newNode *Node) error {
 				log.Println(err)
 			}
 
-			entry.UpdateValues(newNodeAddrHash, newNode)
+			entry.UpdateValues(newNodeAddrHash, newNode.Info)
 
 		}
 
@@ -173,11 +180,12 @@ func (node *Node) updateFingerTable(newNode *Node) error {
 
 	return nil
 }
+
 // Check to see if node has a connection with a targetNode
-func (node *Node) CheckConnection(targetNodeAddr string) bool {
+func (node *Node) Connected(targetNode *pb.Node) bool {
 	// first check to see if it is in the connection pool
 
-	nodeConn := node.ConnectionPool[targetNodeAddr]
+	nodeConn := node.ConnectionPool[address(targetNode.Address, int(targetNode.Port))]
 
 	if validConnState(nodeConn.Conn) {
 		return true
@@ -188,35 +196,25 @@ func (node *Node) CheckConnection(targetNodeAddr string) bool {
 
 // Send HeartBeat to the ipaddress of a targetNode
 // this communicates that current node (node) is active
-func (node *Node) SendHeartBeat(targetNode *Node) {
+func (node *Node) SendHeartBeat(targetNode *pb.Node) {
 
 	go func() {
-		ctx := context.Background()
-
+		ctx, cancel := context.WithTimeout(context.Background(), 3*node.HeartBeatDuration)
+		defer cancel()
 		for {
 			select {
 			case <-node.HeartBeatTicker.C:
-				node.HeartBeatRPC(ctx, nil)
+				if node.Connected(targetNode) {
+					node.ConnectionPool[address(targetNode.Address, int(targetNode.Port))].Client.HeartBeatRPC(
+						ctx,
+						&pb.HeartBeat{
+							SourceNode: node.Info,
+							Timestamp:  timestamppb.Now(),
+						})
+				} else { //attempt to connect
+					node.Connect(targetNode.Address, int(targetNode.Port))
+				}
 			}
 		}
 	}()
-}
-
-func (node *Node) ReceiveHeartBeat(){
-
-}
-
-//AcknowledgeHeartBeat method will try to send a heartbeat to the targetNodeID.
-// If the our srcNode does not have a connection in the ConnectionPool, it will attempt to reconnect
-// for a certain amount of time.
-func (node *Node) AcknowledgeHeartBeat(targetNodeId string, hb *pb.HeartBeat, err error) {
-	if err != nil {
-		clnt := node.ConnectionPool[targetNodeId].Client
-
-		if clnt == nil { // If client is nil attempt to connect and ack
-
-		} else {
-
-		}
-	}
 }

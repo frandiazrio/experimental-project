@@ -2,6 +2,7 @@ package chord
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -39,9 +40,21 @@ func (node *Node) AddNodeToFingerTableRPC(ctx context.Context, targetNode *pb.No
 }
 
 func (node *Node) HeartBeatRPC(ctx context.Context, hb *pb.HeartBeat) (*pb.Bool, error) {
-	
+
 	// return True because heartbeat was received
-	return &pb.Bool{
-		Value: true,
-	}, nil
+	select {
+
+	case <-ctx.Done():
+		log.Println("Error: timeout") // TODO better handle nodes
+		return &pb.Bool{
+			Value: false,
+		}, errors.New("Error: timeout")
+	default:
+		log.Printf("Info from heartbeat %s \n %s", address(hb.SourceNode.Address, int(hb.SourceNode.Port)), hb.Timestamp.String())
+		return &pb.Bool{
+			Value: true,
+		}, nil
+
+	}
+
 }
