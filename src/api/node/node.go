@@ -115,7 +115,7 @@ func (node *Node) Stop() {
 // connect to targetNode ip and port and returns a client that can perform the grpc calls
 
 func (node *Node) Connect(targetIPAddr string, targetPort int, config ...grpc.DialOption) *grpcNodeConn {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*node.HeartBeatDuration) // Use 3 HeartBeats before cancelling
+	ctx, cancel := context.WithTimeout(context.Background(), 4*node.HeartBeatDuration) // Use 3 HeartBeats before cancelling
 	defer cancel()
 
 	var conn *grpc.ClientConn
