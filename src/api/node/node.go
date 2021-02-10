@@ -67,15 +67,15 @@ func NewNode(Name, IpAddr string, port int32, virtualNode bool, heartBeatDuratio
 	}
 }
 
-func (node *Node) getServerAddress() string {
-	return address(node.Info.Address, int(node.Info.Port))
+func (node *Node) EndPoint() string {
+	return endpoint(node.Info.Address, int(node.Info.Port))
 }
 
 // Start node service by binding to the assigned address to the node
 func (node *Node) Start() *Node {
 	var err error
 
-	listener, err := net.Listen("tcp", node.getServerAddress())
+	listener, err := net.Listen("tcp", node.EndPoint())
 
 	if err != nil {
 		// error creating listener on address
@@ -87,7 +87,7 @@ func (node *Node) Start() *Node {
 	// Using the grpc server in node
 	// Node implements the NodeAgentServer interface so we can use directly in here to start the service
 	pb.RegisterNodeAgentServer(node.grpcServer, node)
-	log.Printf("Starting node server on %s \n", node.getServerAddress())
+	log.Printf("Starting node server on %s \n", node.EndPoint())
 	if err = node.grpcServer.Serve(node.listener); err != nil {
 		log.Println("Error starting server")
 		log.Fatal(err)
@@ -121,17 +121,17 @@ func (node *Node) Connect(targetIPAddr string, targetPort int, config ...grpc.Di
 	var conn *grpc.ClientConn
 	var err error
 	if len(config) == 0 { // Use some default grpc DialOption (meh)
-		conn, err = grpc.DialContext(ctx, address(targetIPAddr, targetPort), grpc.WithInsecure())
+		conn, err = grpc.DialContext(ctx, endpoint(targetIPAddr, targetPort), grpc.WithInsecure())
 	} else {
 
-		conn, err = grpc.DialContext(ctx, address(targetIPAddr, targetPort), config...)
+		conn, err = grpc.DialContext(ctx, endpoint(targetIPAddr, targetPort), config...)
 	}
 	if err != nil {
 		// Error establising connection
 		log.Fatal(err)
 	}
 
-	addr := address(targetIPAddr, targetPort)
+	addr := endpoint(targetIPAddr, targetPort)
 	client := pb.NewNodeAgentClient(conn)
 	grpcConn := grpcNodeConn{
 		TargetID:      addr, // We can later hash this to get a hash id
@@ -143,7 +143,7 @@ func (node *Node) Connect(targetIPAddr string, targetPort int, config ...grpc.Di
 		Active:        true,
 	}
 
-	node.ConnectionPool[address(targetIPAddr, targetPort)] = &grpcConn
+	node.ConnectionPool[endpoint(targetIPAddr, targetPort)] = &grpcConn
 
 	return &grpcConn
 
@@ -151,7 +151,7 @@ func (node *Node) Connect(targetIPAddr string, targetPort int, config ...grpc.Di
 
 // Hashes the nodes ip address to get the node id
 func (node *Node) GetNodeId() []byte {
-	return getHash(node.getServerAddress())
+	return getHash(node.EndPoint())
 }
 
 func NewDefaultNode(ID string, port int) *Node {
@@ -160,8 +160,8 @@ func NewDefaultNode(ID string, port int) *Node {
 
 // accepts new node to fingertable
 func (node *Node) updateFingerTable(newNode *Node) error {
-	currentNodeAddrHash := getHash(node.getServerAddress()) // used to compare with key, and other values in the finger table
-	newNodeAddrHash := getHash(newNode.getServerAddress())
+	currentNodeAddrHash := getHash(node.EndPoint()) // used to compare with key, and other values in the finger table
+	newNodeAddrHash := getHash(newNode.EndPoint())
 	for i, v := range *node.FingerTable {
 		vAddrHash := v.ID
 
@@ -185,7 +185,7 @@ func (node *Node) updateFingerTable(newNode *Node) error {
 func (node *Node) Connected(targetNode *pb.Node) bool {
 	// first check to see if it is in the connection pool
 
-	nodeConn := node.ConnectionPool[address(targetNode.Address, int(targetNode.Port))]
+	nodeConn := node.ConnectionPool[endpoint(targetNode.Address, int(targetNode.Port))]
 
 	if validConnState(nodeConn.Conn) {
 		return true
@@ -205,7 +205,7 @@ func (node *Node) SendHeartBeat(targetNode *pb.Node) {
 			select {
 			case <-node.HeartBeatTicker.C:
 				if node.Connected(targetNode) {
-					node.ConnectionPool[address(targetNode.Address, int(targetNode.Port))].Client.HeartBeatRPC(
+					node.ConnectionPool[endpoint(targetNode.Address, int(targetNode.Port))].Client.HeartBeatRPC(
 						ctx,
 						&pb.HeartBeat{
 							SourceNode: node.Info,

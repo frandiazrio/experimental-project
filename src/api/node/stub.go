@@ -51,7 +51,7 @@ func (node *Node) HeartBeatRPC(ctx context.Context, hb *pb.HeartBeat) (*pb.Bool,
 		}, errors.New("Error: timeout")
 	default:
 		log.Printf("Info from heartbeat: %s \n %s \n", 
-			address(hb.SourceNode.Address,int(hb.SourceNode.Port)),
+			endpoint(hb.SourceNode.Address,int(hb.SourceNode.Port)),
 			hb.Timestamp.String())
 
 		return &pb.Bool{

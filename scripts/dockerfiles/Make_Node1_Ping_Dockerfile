@@ -1,0 +1,30 @@
+# build the executable binary
+FROM golang:alpine AS builder-node-1
+
+#install git and other stuff
+
+RUN apk update  
+
+WORKDIR /project/
+
+COPY . .
+
+
+
+# I am lazy
+ENV TEST_DIR ./testing/test-ping 
+
+RUN cd ${TEST_DIR}/node1 && go build -o node_1
+#RUN cd ${TEST_DIR}/node2 && go build -o node_2 
+
+
+
+#Step 2 build a small image
+
+FROM alpine:latest
+
+
+COPY --from=builder-node-1 /project/testing/test-ping/node1/node_1 /
+ 
+# change this at will
+CMD ["./node_1"]

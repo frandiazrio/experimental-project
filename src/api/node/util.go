@@ -32,7 +32,7 @@ func isPowerOfTwo(num int) bool {
 	return (num != 0) && ((num & (num - 1)) == 0)
 }
 
-func address(ipaddr string, port int) string {
+func endpoint(ipaddr string, port int) string {
 	return fmt.Sprintf("%s:%d", ipaddr, port)
 }
 
