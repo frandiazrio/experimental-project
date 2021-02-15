@@ -64,7 +64,7 @@ func newFingerTable(tableSize int, n *pb.Node) (*FingerTable, error) {
 	fingertable := make(FingerTable, tableSize)
 
 	for i := 0; i < tableSize; i++ {
-		addr := address(n.Address, int(n.Port))
+		addr := endpoint(n.Address, int(n.Port))
 		fingertable[i] = newFingerEntry(fingerID(hashFunc([]byte(addr), sha1.New()), i, tableSize), n)
 
 	}
